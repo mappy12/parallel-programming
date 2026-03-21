@@ -4,19 +4,15 @@ import sys
 def load_matrix(filename):
     """Читает матрицу из файла формата: первая строка - размер, далее данные."""
 
-    file = open(filename, 'r')
+    with open(filename, 'r') as file:
+        # Первая строка - это размер матрицы
+        n = int(file.readline())
 
-    # Первая строка - это размер матрицы
-    n = int(file.readline())
-
-    matrix = []
-
-    for line in file:
-        if line.strip():
-            row = [float(x) for x in line.split()]
-            matrix.append(row)
-
-    file.close()
+        matrix = []
+        for line in file:
+            if line.strip():
+                row = [float(x) for x in line.split()]
+                matrix.append(row)
 
     return matrix
 

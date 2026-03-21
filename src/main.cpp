@@ -4,6 +4,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <iomanip>
+#include <omp.h>
 
 using namespace std;
 
@@ -14,6 +15,7 @@ vector<vector<double>> multMatrix(
 
     vector<vector<double>> C(n, vector<double>(n, 0.0));
 
+    #pragma omp parallel for collapse(2)
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             for (int k = 0; k < n; k++) {
@@ -67,34 +69,42 @@ void writeMatrix(
 }
 
 int main() {
-        int n1, n2;
+    int n1, n2;
 
-        vector<vector<double>> A = readMatrix("data/matrixA.txt", n1);
-        vector<vector<double>> B = readMatrix("data/matrixB.txt", n2);
+    vector<vector<double>> A = readMatrix("data/matrixA.txt", n1);
+    vector<vector<double>> B = readMatrix("data/matrixB.txt", n2);
 
-        if (n1 <= 0 || n2 <= 0) {
-            cout << "Invalid number of rows and columns." << endl;
-            return 1;
-        }
+    if (n1 <= 0 || n2 <= 0) {
+        cout << "Invalid number of rows and columns." << endl;
+        return 1;
+    }
 
-        if (n1 != n2) {
-            cout << "Matrices must be the same size" << endl;
-            return 1;
-        }
+    if (n1 != n2) {
+        cout << "Matrices must be the same size" << endl;
+        return 1;
+    }
 
-        auto start = chrono::high_resolution_clock::now();
+    cout << "Physical cores: " << omp_get_num_procs() << endl;
+    cout << "Threads used: " << omp_get_max_threads() << endl;
 
-        vector<vector<double>> C = multMatrix(A, B, n1);
+    auto start = chrono::high_resolution_clock::now();
 
-        auto end = chrono::high_resolution_clock::now();
+    vector<vector<double>> C = multMatrix(A, B, n1);
 
-        std::chrono::duration<double> elapsedTime = end - start;
+    auto end = chrono::high_resolution_clock::now();
 
-        writeMatrix("data/matrixC.txt", C, n1);
+    std::chrono::duration<double> elapsedTime = end - start;
 
-        cout << "Matrix size: " << n1 << "x" << n1 << endl;
-        cout << "Computation time: " << elapsedTime.count() << " seconds" << endl;
-        cout << "Result saved to matrixC.txt" << endl;
+    writeMatrix("data/matrixC.txt", C, n1);
 
+    cout << "Matrix size: " << n1 << "x" << n1 << endl;
+    cout << "Computation time: " << elapsedTime.count() << " seconds" << endl;
+
+    long long operations = (long long) n1 * n1 * n1;
+    cout << "Task volume (N^3): " << operations << " operations" << endl;
+
+    cout << "Result saved to matrixC.txt" << endl;
+
+    return 0;
 }
 
