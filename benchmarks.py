@@ -11,12 +11,12 @@ THREADS = [1, 2, 4, 8]
 
 EXE_PATH = 'src/matrix'
 
-def run_command(command, description):
+def run_command(command, description, env_param=None):
     """Выполняет команду и возвращает (успех, вывод)."""
     
     print(f"{description}...")
 
-    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+    result = subprocess.run(command, shell=True, capture_output=True, text=True, env=env_param)
 
     if result.returncode != 0:
         print(f"    Ошибка: {result.stderr.strip()}")
@@ -49,7 +49,9 @@ def main():
             env = os.environ.copy()
             env['OMP_NUM_THREADS'] = str(threads)
 
-            success, output = run_command(EXE_PATH, f"Запуск программы умножения ({threads} потоков)")
+            success, output = run_command(EXE_PATH,
+                                          f"Запуск программы умножения ({threads} потоков)",
+                                          env_param=env)
 
             if not success:
                 continue
@@ -83,15 +85,34 @@ def main():
 
             results.append({
                 'Size': n,
+                'Threads': threads,
                 'Time_sec': exec_time,
                 'Operations': operations,
-                'Status': is_correct
+                'Status': is_correct,
             })
+
+    base_times = {}
+    for r in results:
+        if r['Threads'] == 1:
+            base_times[r['Size']] = r['Time_sec']
+
+    for r in results:
+        n = r['Size']
+        t_p = r['Time_sec']
+        p = r['Threads']
+
+        if t_p > 0 and n in base_times:
+            t_1 = base_times[n]
+            r['Speedup'] = round(t_1 / t_p, 2)
+            r['Efficiency'] = round(r['Speedup'] / p * 100, 1)
+        else:
+            r['Speedup'] = 0.0
+            r['Efficiency'] = 0.0
 
     if results:
         with open(STATS_FILE, 'w', newline='', encoding='utf-8') as f:
 
-            fieldnames = ['Size', 'Time_sec', 'Operations', 'Status']
+            fieldnames = ['Size', 'Threads', 'Time_sec', 'Speedup', 'Efficiency', 'Operations', 'Status']
             writer = csv.DictWriter(f, fieldnames=fieldnames)
 
             writer.writeheader()
