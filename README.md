@@ -22,11 +22,12 @@
 
 **Установка зависимостей**
 
-Для macOS:
+Для macOS:    
 Требуется пакетный менеджер Homebrew. Выполните в терминале:
-
-```# Установка библиотеки OpenMP
+```
+# Установка библиотеки OpenMP
 brew install libomp
 
 # Установка необходимых Python-библиотек
-pip3 install numpy matplotlib pandas```
+pip3 install numpy matplotlib pandas
+```
