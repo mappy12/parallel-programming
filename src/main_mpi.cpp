@@ -192,12 +192,14 @@ int main(int argc, char** argv) {
         cout << "Matrix size:" << n << "x" << n << endl;
         cout << "Computation time: " << local_time << " seconds" << endl;
     } else {
-        MPI_Send(&localC[0][0],
-            local_rows * n,
-            MPI_DOUBLE,
-            0,
-            0,
-            MPI_COMM_WORLD);
+        for (int i = 0; i < local_rows; ++i) {
+            MPI_Send(localC[i].data(),
+                     n,
+                     MPI_DOUBLE,
+                     0,
+                     0,
+                     MPI_COMM_WORLD);
+        }
     }
 
     MPI_Finalize();
