@@ -120,25 +120,28 @@ int main(int argc, char** argv) {
                 for (int i = 0; i < send_rows; ++i)
                     localA[i] = A[i];
             } else {
-                MPI_Send(&A[offset][0],
-                    send_rows * n,
-                    MPI_DOUBLE,
-                    p,
-                    0,
-                    MPI_COMM_WORLD);
+                for (int i = 0; i < send_rows; ++i) {
+                    MPI_Send(A[offset + i].data(),
+                             n,
+                             MPI_DOUBLE,
+                             p,
+                             0,
+                             MPI_COMM_WORLD);
+                }
             }
 
             offset += send_rows;
         }
     } else {
-        MPI_Recv(&localA[0][0],
-            local_rows * n,
-            MPI_DOUBLE,
-            0,
-            0,
-            MPI_COMM_WORLD,
-            MPI_STATUS_IGNORE
-            );
+        for (int i = 0; i < local_rows; ++i) {
+            MPI_Recv(localA[i].data(),
+                     n,
+                     MPI_DOUBLE,
+                     0,
+                     0,
+                     MPI_COMM_WORLD,
+                     MPI_STATUS_IGNORE);
+        }
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
@@ -170,15 +173,15 @@ int main(int argc, char** argv) {
                 for (int i = 0; i < recv_rows; ++i)
                     C[i] = localC[i];
             } else {
-                MPI_Recv(
-                    &C[offset][0],
-                    recv_rows * n,
-                    MPI_DOUBLE,
-                    p,
-                    0,
-                    MPI_COMM_WORLD,
-                    MPI_STATUS_IGNORE
-                    );
+                for (int i = 0; i < recv_rows; ++i) {
+                    MPI_Recv(C[offset + i].data(),
+                             n,
+                             MPI_DOUBLE,
+                             p,
+                             0,
+                             MPI_COMM_WORLD,
+                             MPI_STATUS_IGNORE);
+                }
             }
 
             offset += recv_rows;
@@ -187,7 +190,7 @@ int main(int argc, char** argv) {
         writeMatrix("data/matrixC.txt", C, n);
 
         cout << "Matrix size:" << n << "x" << n << endl;
-        cout << "Computation time: " << local_time << "s" << endl;
+        cout << "Computation time: " << local_time << " seconds" << endl;
     } else {
         MPI_Send(&localC[0][0],
             local_rows * n,

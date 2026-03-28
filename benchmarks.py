@@ -9,7 +9,7 @@ STATS_FILE = 'stats_mpi.csv'
 
 THREADS = [1, 2, 4, 8]
 
-EXE_PATH = './src/matrix_mpi'
+EXE_PATH = 'src/matrix_mpi'
 
 
 def run_command(command, description, env_param=None):
