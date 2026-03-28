@@ -187,7 +187,7 @@ int main(int argc, char** argv) {
         writeMatrix("data/matrixC.txt", C, n);
 
         cout << "Matrix size:" << n << "x" << n << endl;
-        cout << "Time: " << local_time << "s" << endl;
+        cout << "Computation time: " << local_time << "s" << endl;
     } else {
         MPI_Send(&localC[0][0],
             local_rows * n,
