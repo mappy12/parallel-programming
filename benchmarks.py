@@ -9,7 +9,7 @@ STATS_FILE = 'stats_mpi.csv'
 
 THREADS = [1, 2, 4, 8]
 
-EXE_PATH = 'src/matrix'
+EXE_PATH = './src/matrix_mpi'
 
 
 def run_command(command, description, env_param=None):
@@ -93,13 +93,13 @@ def main():
 
     base_times = {}
     for r in results:
-        if r['Threads'] == 1:
+        if r['Processes'] == 1:
             base_times[r['Size']] = r['Time_sec']
 
     for r in results:
         n = r['Size']
         t_p = r['Time_sec']
-        p = r['Threads']
+        p = r['Processes']
 
         if t_p > 0 and n in base_times:
             t_1 = base_times[n]
@@ -111,7 +111,7 @@ def main():
 
     if results:
         with open(STATS_FILE, 'w', newline='', encoding='utf-8') as f:
-            fieldnames = ['Size', 'Threads', 'Time_sec', 'Speedup', 'Efficiency', 'Operations', 'Status']
+            fieldnames = ['Size', 'Processes', 'Time_sec', 'Speedup', 'Efficiency', 'Operations', 'Status']
             writer = csv.DictWriter(f, fieldnames=fieldnames)
 
             writer.writeheader()
