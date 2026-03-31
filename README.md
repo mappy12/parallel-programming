@@ -79,12 +79,12 @@ $$C_{ij} = \sum_{k=1}^{N} A_{ik} \times B_{kj}$$
 
 ### 1. Зависимость времени от количества процессов
 
-[](mpi_plot_time.png)
+![](mpi_plot_time.png)
 
 ### 2. Ускорение
 
-[](mpi_plot_speedup.png)
+![](mpi_plot_speedup.png)
 
 ### 3. Эффективность использования ресурсов
 
-[](mpi_plot_efficiency.png)
+![](mpi_plot_efficiency.png)
